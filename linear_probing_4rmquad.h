@@ -44,7 +44,7 @@ class HashTable {
   explicit HashTable(size_t size = 101) : array_(NextPrime(size))
     { MakeEmpty(); }
   
-  bool Contains(const HashedObj & x) /*const*/ {// had to take out const for now 
+  bool Contains(const HashedObj & x) const {
     return IsActive(FindPos(x));
   }
   
@@ -94,31 +94,6 @@ class HashTable {
     return true;
   }
 
-  //********************* Adding the following functions ***********************//////////
-  int getCollisions() const{
-    return collision_;
-  }
-
-  size_t getNumberOfItems() const{
-    return current_size_;
-  }
-
-  int getSizeArray() const{
-    return array_.size();
-  }
-
-  float loadFactor() const{
-    return (float)(current_size_)/(float)(array_.size());
-  } 
-
-  float avgNumberOfCollisions() const{
-    return (float)getCollisions()/(float)getNumberOfItems();
-  }
-
-  int getProbes() const{
-    return probes_;
-  }
-  //_____--------_________------______ End 1 _____--------______-------______-----///////
  private:        
   struct HashEntry {
     HashedObj element_;
@@ -135,47 +110,22 @@ class HashTable {
   std::vector<HashEntry> array_;
   size_t current_size_;
 
-  //added for collision
-  int collision_=0;
-  //added for number of probe
-  int probes_=0;
-
   bool IsActive(size_t current_pos) const
   { return array_[current_pos].info_ == ACTIVE; }
 
-  size_t FindPos(const HashedObj & x) /*const*/ {
+  size_t FindPos(const HashedObj & x) const {
     size_t offset = 1;
     size_t current_pos = InternalHash(x);
-    
-    //addng the following line to keep track of the number of probe
-    probes_=1;
+      
     while (array_[current_pos].info_ != EMPTY &&
 	   array_[current_pos].element_ != x) {
       current_pos += offset;  // Compute ith probe.
-      probes_++;             //  incrementing the probes
-      collision_++;                               //added variable for collision
       offset += 2;
       if (current_pos >= array_.size())
 	current_pos -= array_.size();
     }
     return current_pos;
   }
-
-  //Overrriding this to see something with contains, cuz it won't let me use the previous one since contains has to be const
-   /* size_t FindPos(const HashedObj & x) const {
-    size_t offset = 1;
-    size_t current_pos = InternalHash(x);
-      
-    while (array_[current_pos].info_ != EMPTY &&
-     array_[current_pos].element_ != x) {
-      current_pos += offset;  // Compute ith probe.
-      //collision_++;                               //added variable for collision
-      offset += 2;
-      if (current_pos >= array_.size())
-  current_pos -= array_.size();
-    }
-    return current_pos;
-  }*/
 
   void Rehash() {
     std::vector<HashEntry> old_array = array_;

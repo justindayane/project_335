@@ -15,11 +15,28 @@ void TestFunctionForHashTable(HashTableType &hash_table, const string &words_fil
   hash_table.MakeEmpty();  
   //..Insert your own code
 
-  cout << "Collisions: " << endl;
-  cout << "Number of items: " << endl;
-  cout << "Size of hash table: " << endl;
-  cout << "Load factor: " << endl;
-  cout << "Avg. number of collisions: " << endl;
+  //Here I am gonna populate the hash table hash_table with the words from words_filename
+  ifstream wordsfile(words_filename);
+  string line;
+  while(getline(wordsfile,line)){ //save the word on each line in the string "line"
+    hash_table.Insert(line);      //insert that string the hash table
+  }
+
+  cout << "Collisions: " << hash_table.getCollisions() << endl;
+  cout << "Number of items: " << hash_table.getNumberOfItems() << endl;
+  cout << "Size of hash table: " << hash_table.getSizeArray() << endl;
+  cout << "Load factor: " << hash_table.loadFactor() << endl;
+  cout << "Avg. number of collisions: " << hash_table.avgNumberOfCollisions() << endl << endl;
+
+  //This is where we will deal with the queried words
+  ifstream queryfile(query_filename);
+  while(getline(queryfile,line)){
+    if(hash_table.Contains(line)){
+      cout <<line << " Found " << hash_table.getProbes() << endl;
+    }
+    else
+      cout <<line << " Not_Found " << hash_table.getProbes() << endl;
+  }
 }
 
 int testFunctionWrapper(int argument_count, char **argument_list) {
